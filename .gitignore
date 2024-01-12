@@ -15,6 +15,9 @@
 # IntelliJ
 out/
 
+# IML file
+*.iml
+
 # Compiled class file
 *.class
 
