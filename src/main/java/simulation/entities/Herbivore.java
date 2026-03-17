@@ -29,9 +29,9 @@ public final class Herbivore extends Creature {
     }
 
     @Override
-    public void makeMove(Point currentPoint) {
+    public String makeMove(Point currentPoint) {
         if (!gameMap.hasCreature(this)) {
-            return;
+            return "no_Herbivore";
         }
 
         // herbove can move (how many point traverse for one step)
@@ -47,8 +47,9 @@ public final class Herbivore extends Creature {
                 // go to find path grass
                 currentPathToTarget.addAll(search.findPathToTarget(currentPoint, typeOfFood));
                 if (currentPathToTarget.isEmpty()) {
-                    System.out.println("No grass! Game is over");
-                    System.exit(0);
+                    System.out.println("No grass!");
+                    return "no_grass";
+
                 }
             }
 
@@ -72,6 +73,7 @@ public final class Herbivore extends Creature {
             this.hp -= 1;
         }
         currentPathToTarget.clear();
+        return "ok";
     }
 
     public boolean isAttacked() {

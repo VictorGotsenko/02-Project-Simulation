@@ -16,6 +16,7 @@ public final class GameMap {
     private HashMap<Point, Entity> entities;
     private RenderMapImpl renderMap;
 
+
     private int maxCountRabbit;
     private int maxCountPredator;
 
@@ -25,7 +26,7 @@ public final class GameMap {
         this.height = y;
         this.renderMap = renderMap;
         this.entities = new HashMap<>();
-        this.maxCountRabbit = (int) (x * 70 / 100.0);  // in percent
+        this.maxCountRabbit = (int) (x * 45 / 100.0);  // in percent 70
         this.maxCountPredator = (int) (x * 15 / 100.0);  // in percent
 
         GenerateEntity generateEntity = new GenerateEntity();

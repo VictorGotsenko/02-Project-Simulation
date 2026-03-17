@@ -12,7 +12,7 @@
 
 ### How to use:
  * System requirements: Gradle 8.5 and Java ver.21
-Clone the project locally and run:
+ * Clone the project locally and run:
 ```shell
 make build-run
 ```

@@ -2,6 +2,8 @@ package simulation;
 
 import simulation.entities.Creature;
 import simulation.entities.Entity;
+import simulation.entities.Grass;
+import simulation.entities.Herbivore;
 import simulation.model.GameMap;
 import simulation.model.Point;
 
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 
 public final class Simulation {
     GameMap gameMap;
+
     private boolean isRunning = true;
     public boolean isPaused = false;
 
@@ -37,14 +40,21 @@ public final class Simulation {
         scanner.nextLine();
         // Thread is reading user inputs for switch Pause/Continue
         Thread inputThread = new Thread(() -> {
-            while (isRunning) {
+            while (!Thread.currentThread().isInterrupted()) {
                 String input = scanner.nextLine();
                 if (input.equalsIgnoreCase("p")) {
                     isPaused = !isPaused;
                     System.out.println(isPaused ? "--- ПАУЗА ---" : "--- ПРОДОЛЖАЕМ ---");
                 }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            System.out.println("inputThread - stop");
         });
+        inputThread.setDaemon(true);
         inputThread.start();
 
         while (isRunning) {
@@ -64,26 +74,67 @@ public final class Simulation {
     }
 
     public void nextTurn() {
-        if (getCreatures().isEmpty()) {
-            System.out.println("No creatures! Game is over");
-            System.exit(0);
+//        if (isPaused) {
+//            return;
+//        }
+
+        if (getCreatures("").isEmpty()) {
+            System.out.println("No creature or grass. Game is over!");
+            isRunning = false;
+            return;
         }
-        for (Map.Entry<Point, Entity> entry : getCreatures().entrySet()) {
+
+        for (Map.Entry<Point, Entity> entry : getCreatures("").entrySet()) {
             if (isPaused) {
                 return;
             }
-            ((Creature) entry.getValue()).makeMove(entry.getKey());
+            String error = ((Creature) entry.getValue()).makeMove(entry.getKey());
+            if (error.equals("no_herbivore") && getCreatures("Herbivore").isEmpty()) {
+                isRunning = false;
+                return;
+            }
+            if (error.equals("no_grass") && getCreatures("Grass").isEmpty()) {
+                isRunning = false;
+                return;
+            }
         }
     }
 
-    private Map<Point, Entity> getCreatures() {
-        return gameMap.getEntities().entrySet().stream()
-                .filter(pointEntityEntry -> (pointEntityEntry.getValue() != null
-                        && pointEntityEntry.getValue() instanceof Creature))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (a, b) -> a,
-                        HashMap::new));
+    private Map<Point, Entity> getCreatures(String creature) {
+
+        switch (creature) {
+            case "Herbivore" -> {
+                return gameMap.getEntities().entrySet().stream()
+                        .filter(pointEntityEntry -> (pointEntityEntry.getValue() != null
+                                && pointEntityEntry.getValue() instanceof Herbivore))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (a, b) -> a,
+                                HashMap::new));
+            }
+
+            case "Grass" -> {
+                return gameMap.getEntities().entrySet().stream()
+                        .filter(pointEntityEntry -> (pointEntityEntry.getValue() != null
+                                && pointEntityEntry.getValue() instanceof Grass))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (a, b) -> a,
+                                HashMap::new));
+            }
+
+            default -> {
+                return gameMap.getEntities().entrySet().stream()
+                        .filter(pointEntityEntry -> (pointEntityEntry.getValue() != null
+                                && pointEntityEntry.getValue() instanceof Creature))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (a, b) -> a,
+                                HashMap::new));
+            }
+        }
     }
 }

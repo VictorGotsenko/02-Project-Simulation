@@ -6,7 +6,13 @@ public abstract class Creature extends Entity {
     protected int hp;  // health point
     protected int speed;
 
-    public void makeMove(Point currentPoint) {
+    /**
+     *
+     * @param currentPoint
+     * @return is food
+     */
+    public String makeMove(Point currentPoint) {
+        return "";
     }
 
     /**

@@ -27,9 +27,9 @@ public final class Predator extends Creature {
     }
 
     @Override
-    public void makeMove(Point currentPoint) {
+    public String makeMove(Point currentPoint) {
         if (!gameMap.hasCreature(this)) {
-            return;
+            return "no_Predator";
         }
 
         for (int i = 0; i < speed; i++) {
@@ -42,8 +42,8 @@ public final class Predator extends Creature {
             if (currentPathToTarget.isEmpty()) {
                 currentPathToTarget.addAll(search.findPathToTarget(currentPoint, typeOfFood));
                 if (currentPathToTarget.isEmpty()) {
-                    System.out.println("No herbivore! Game is over");
-                    System.exit(0);
+                    System.out.println("No herbivore!");
+                    return "no_herbivore";
                 }
             }
 
@@ -71,6 +71,7 @@ public final class Predator extends Creature {
             this.hp -= 1;
         }
         currentPathToTarget.clear();
+        return "ok";
     }
 
     private void attack(Herbivore herbivore) {
